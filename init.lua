@@ -104,6 +104,7 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 
+-- Enable line numbers in netrw view
 vim.g.netrw_bufsettings = 'noma nomod nuy rnu nobl nowrap ro'
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -156,7 +157,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 20
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -182,10 +183,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -270,6 +271,33 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+
+  -- Adds git commands from within vim
+  {
+    'tpope/vim-fugitive',
+  },
+
+  -- Adds LaTeX support
+  --
+  {
+    'lervag/vimtex',
+    ft = { 'tex' },
+    init = function()
+      vim.g.vimtex_view_method = 'zathura'
+      vim.g.vimtex_compiler_method = 'latexmk'
+      vim.g.vimtex_syntax_enabled = 0 -- treesitter does the syntax highlighting
+      vim.api.nvim_create_autocmd('ModeChanged', {
+        pattern = 'i:n',
+        callback = function()
+          if vim.bo.filetype == 'tex' and vim.bo.modified and vim.bo.buflisted then
+            vim.cmd 'silent! write'
+            vim.cmd 'VimtexCompile'
+          end
+        end,
+        desc = 'Recompile LaTeX on normal mode entry',
+      })
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
