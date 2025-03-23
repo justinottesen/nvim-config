@@ -287,16 +287,6 @@ require('lazy').setup({
       vim.g.vimtex_view_method = 'zathura'
       vim.g.vimtex_compiler_method = 'latexmk'
       vim.g.vimtex_syntax_enabled = 0 -- treesitter does the syntax highlighting
-      vim.api.nvim_create_autocmd('ModeChanged', {
-        pattern = 'i:n',
-        callback = function()
-          if vim.bo.filetype == 'tex' and vim.bo.modified and vim.bo.buflisted then
-            vim.cmd 'silent! write'
-            vim.cmd 'VimtexCompile'
-          end
-        end,
-        desc = 'Recompile LaTeX on normal mode entry',
-      })
     end,
   },
 
